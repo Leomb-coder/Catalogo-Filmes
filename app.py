@@ -1,12 +1,22 @@
 import os
 import uuid
+from functools import wraps
 
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from psycopg2.extras import RealDictCursor
 from werkzeug.utils import secure_filename
-from database import get_connection
+from database import get_connection, consultar_login, cadastrar_usuario
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
+
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+    return decorated_function
 
 # ── Upload config ──────────────────────────────────────────────────────────────
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -45,7 +55,7 @@ def save_upload(file) -> str | None:
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
-@app.route('/', methods=['GET'])
+@app.route('/api', methods=['GET'])
 def home():
     return jsonify({"message": "API de catalogo de filmes"}), 200
 
@@ -58,6 +68,7 @@ def ping():
 
 
 @app.route('/filmes', methods=['GET'])
+@login_required
 def listar_filmes():
     sql = "SELECT * FROM filmes"
     try:
@@ -73,6 +84,7 @@ def listar_filmes():
 
 
 @app.route("/novo", methods=["GET", "POST"])
+@login_required
 def novo_filme():
     sql = "INSERT INTO filmes (titulo, genero, ano, url_capa) VALUES (%s, %s, %s, %s)"
     try:
@@ -107,6 +119,7 @@ def novo_filme():
 
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
+@login_required
 def editar_filme(id):
     try:
         conn = get_connection()
@@ -155,6 +168,7 @@ def editar_filme(id):
 
 
 @app.route("/deletar/<int:id>", methods=["POST"])
+@login_required
 def deletar_filme(id):
     try:
         conn = get_connection()
@@ -167,6 +181,43 @@ def deletar_filme(id):
         print('erro: ', str(ex))
         return jsonify({"message": "erro ao deletar filme"}), 500
 
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        result = consultar_login(email, password)
+
+        if result == 200:
+            session['user'] = email
+            return redirect(url_for("listar_filmes"))
+        else:
+            return render_template("login.html", erro=result)
+
+    return render_template('login.html', erro=None)
+
+@app.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        password = request.form['password']
+
+        cadastro_usuario = cadastrar_usuario(nome, email, password)
+
+        if  cadastro_usuario == 200:
+            return redirect(url_for('login'))
+        else:
+            return cadastro_usuario
+
+    return render_template('cadastro.html', erro=None)
+
+@app.route('/logout')
+def logout():
+    session.pop("user", None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
