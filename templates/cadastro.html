@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - DevFLIX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body class="login-page">
+
+    <div class="bg-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
 
     <div class="login-wrapper">
         <div class="login-card">
+
             <div class="login-logo">
                 <h1 class="logo">Dev<span>FLIX</span></h1>
+                <div class="logo-tagline">Seu universo cinematográfico</div>
             </div>
 
+            <div class="login-divider"></div>
+
             <h2 class="login-title">Criar conta</h2>
-            <p class="login-subtitle">Comece seu catálogo de filmes</p>
+            <p class="login-subtitle">Preencha os dados para começar</p>
 
             {% if erro %}
             <div class="login-error" id="login-error">
@@ -29,7 +38,7 @@
             <form method="POST" class="login-form" id="cadastro-form">
                 <div class="input-group">
                     <input type="text" name="nome" id="nome" placeholder=" " required autocomplete="name">
-                    <label for="nome">Nome</label>
+                    <label for="nome">Nome completo</label>
                     <div class="input-highlight"></div>
                 </div>
 
@@ -40,14 +49,13 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="password" name="password" id="password" placeholder=" " required
-                        autocomplete="new-password">
+                    <input type="password" name="password" id="password" placeholder=" " required autocomplete="new-password">
                     <label for="password">Senha</label>
                     <div class="input-highlight"></div>
                 </div>
 
                 <button type="submit" class="btn-login" id="btn-cadastro">
-                    <span class="btn-login-text">Cadastrar</span>
+                    <span class="btn-login-text">Criar minha conta</span>
                     <span class="btn-login-loader" style="display:none;">
                         <span class="btn-spinner"></span>
                     </span>
@@ -55,11 +63,13 @@
             </form>
 
             <div class="login-signup">
-                <p>Já tem uma conta? <a href="{{ url_for('login') }}" class="signup-link">Entrar</a></p>
+                <p>Já tem uma conta? <a href="{{ url_for('login') }}" class="signup-link">Fazer login</a></p>
             </div>
 
             <div class="login-footer">
+                <span class="footer-dot"></span>
                 <p>🎬 Seu catálogo pessoal de filmes</p>
+                <span class="footer-dot"></span>
             </div>
         </div>
     </div>
@@ -67,7 +77,6 @@
     <script>
         const form = document.getElementById('cadastro-form');
         const btn = document.getElementById('btn-cadastro');
-
         form.addEventListener('submit', () => {
             btn.querySelector('.btn-login-text').style.display = 'none';
             btn.querySelector('.btn-login-loader').style.display = 'flex';
@@ -75,7 +84,5 @@
             btn.style.opacity = '0.8';
         });
     </script>
-
 </body>
-
 </html>

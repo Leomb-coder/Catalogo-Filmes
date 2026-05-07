@@ -1,23 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DevFLIX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body class="login-page">
+
+    <!-- Partículas de fundo -->
+    <div class="bg-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
 
     <div class="login-wrapper">
         <div class="login-card">
+
             <div class="login-logo">
                 <h1 class="logo">Dev<span>FLIX</span></h1>
+                <div class="logo-tagline">Seu universo cinematográfico</div>
             </div>
 
-            <h2 class="login-title">Entrar</h2>
-            <p class="login-subtitle">Acesse seu catálogo de filmes</p>
+            <div class="login-divider"></div>
+
+            <h2 class="login-title">Bem-vindo de volta</h2>
+            <p class="login-subtitle">Entre na sua conta para acessar o catálogo</p>
 
             {% if erro %}
             <div class="login-error" id="login-error">
@@ -34,8 +44,7 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="password" name="password" id="password" placeholder=" " required
-                        autocomplete="current-password">
+                    <input type="password" name="password" id="password" placeholder=" " required autocomplete="current-password">
                     <label for="password">Senha</label>
                     <div class="input-highlight"></div>
                 </div>
@@ -49,11 +58,13 @@
             </form>
 
             <div class="login-signup">
-                <p>Não tem uma conta? <a href="{{ url_for('cadastro') }}" class="signup-link">Cadastre-se</a></p>
+                <p>Não tem uma conta? <a href="{{ url_for('cadastro') }}" class="signup-link">Cadastre-se gratuitamente</a></p>
             </div>
 
             <div class="login-footer">
+                <span class="footer-dot"></span>
                 <p>🎬 Seu catálogo pessoal de filmes</p>
+                <span class="footer-dot"></span>
             </div>
         </div>
     </div>
@@ -61,7 +72,6 @@
     <script>
         const form = document.getElementById('login-form');
         const btn = document.getElementById('btn-login');
-
         form.addEventListener('submit', () => {
             btn.querySelector('.btn-login-text').style.display = 'none';
             btn.querySelector('.btn-login-loader').style.display = 'flex';
@@ -69,7 +79,5 @@
             btn.style.opacity = '0.8';
         });
     </script>
-
 </body>
-
 </html>

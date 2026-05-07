@@ -1,67 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevFlix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
 </head>
-
 <body>
 
     <header class="navbar">
         <h1 class="logo">Dev<span>FLIX</span></h1>
-        <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+
+        <div class="navbar-right">
+            {% if usuario %}
+            <div class="navbar-user">
+                <div class="user-avatar">{{ usuario.nome[0].upper() }}</div>
+                <span class="user-name">Olá, <strong>{{ usuario.nome.split()[0] }}</strong></span>
+            </div>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+        </div>
     </header>
 
     <section class="container">
         <div class="header-section">
-            <h2 class="section-title">Catálogo de Filmes</h2>
+            <div>
+                <h2 class="section-title">Catálogo de Filmes</h2>
+                <p class="section-count">
+                    {% if filmes %}{{ filmes|length }} filme{% if filmes|length != 1 %}s{% endif %} na coleção{% endif %}
+                </p>
+            </div>
             <a href="{{ url_for('novo_filme') }}" class="btn-add">
-                + Adicionar Filme
+                <span class="btn-add-icon">+</span> Adicionar Filme
             </a>
         </div>
 
         <div class="grid-filmes">
             {% for filme in filmes %}
             <div class="card">
-                <div class="card-content">
-                    <h3>{{ filme.titulo }}</h3>
-                    {% if filme.url_capa %}
-                    <img src="{{ url_for('static', filename=filme.url_capa) }}" alt="{{ filme.titulo }}" class="card-img">
-                    {% else %}
-                    <div class="card-img card-img-placeholder">🎬</div>
-                    {% endif %}
-                    <p><strong>Gênero:</strong> {{filme.genero}}</p>
-                    <p><strong>Lançamento:</strong> {{ filme.ano }}</p>
-                    <div style="margin-top: 15px;">
-                        <a href="{{ url_for('editar_filme', id=filme.id) }}"
-                            style="padding: 5px 10px; background-color: #f39c12; color: white; text-decoration: none; border-radius: 4px; margin-right: 5px;">Editar</a>
-                        <form action="{{ url_for('deletar_filme', id=filme.id) }}" method="POST"
-                            style="display:inline;">
-                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');"
-                                style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Excluir</button>
+                {% if filme.url_capa %}
+                <img src="{{ url_for('static', filename=filme.url_capa) }}" alt="{{ filme.titulo }}" class="card-img">
+                {% else %}
+                <div class="card-img card-img-placeholder">🎬</div>
+                {% endif %}
+
+                <div class="card-overlay">
+                    <div class="card-info">
+                        <h3 class="card-title">{{ filme.titulo }}</h3>
+                        <div class="card-meta">
+                            <span class="card-genre">{{ filme.genero }}</span>
+                            <span class="card-year">{{ filme.ano }}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="{{ url_for('editar_filme', id=filme.id) }}" class="btn-card btn-edit">✏️ Editar</a>
+                        <form action="{{ url_for('deletar_filme', id=filme.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn-card btn-delete"
+                                onclick="return confirm('Excluir {{ filme.titulo }}?')">🗑️ Excluir</button>
                         </form>
                     </div>
-
                 </div>
             </div>
             {% else %}
-            <div class="empty-message">
-                <h3>Nenhum filme disponível</h3>
+            <div class="empty-state">
+                <div class="empty-icon">🎬</div>
+                <h3>Nenhum filme ainda</h3>
+                <p>Comece adicionando seu primeiro filme ao catálogo</p>
+                <a href="{{ url_for('novo_filme') }}" class="btn-add" style="display:inline-flex; margin-top: 16px;">+ Adicionar Filme</a>
             </div>
             {% endfor %}
         </div>
     </section>
+
     {% include 'components/loading.html' %}
 
     <script>
         window.addEventListener('load', () => {
             Loading.attachToForms('Excluindo filme...');
-            Loading.attachToLinks('.btn-add, .card-content a', 'Carregando...');
+            Loading.attachToLinks('.btn-add, .card-actions a', 'Carregando...');
         });
     </script>
 </body>
-
 </html>
